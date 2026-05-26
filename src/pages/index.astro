@@ -1,25 +1,42 @@
 ---
-import { getCollection, getEntry } from "astro:content";
+import { getEmDashCollection } from "emdash";
 import Base from "../layouts/Base.astro";
 import ProjectCard from "../components/ProjectCard.astro";
 
-const allProjects = await getCollection("projects");
-const featuredProjects = allProjects
-	.sort(
-		(a, b) =>
-			new Date(b.data.published_at ?? 0).getTime() -
-			new Date(a.data.published_at ?? 0).getTime(),
-	)
-	.slice(0, 4);
+// Fetch all data from EmDash
+const [
+	{ entries: allProjects, cacheHint: projectsCache },
+	{ entries: skillsEntries, cacheHint: skillsCache },
+	{ entries: experiencesEntries, cacheHint: experiencesCache },
+	{ entries: contactsEntries, cacheHint: contactsCache },
+	{ entries: aboutsEntries, cacheHint: aboutsCache },
+] = await Promise.all([
+	getEmDashCollection("projects", { orderBy: { created_at: "desc" } }),
+	getEmDashCollection("skills", { orderBy: { created_at: "asc" } }),
+	getEmDashCollection("experiences", { orderBy: { created_at: "desc" } }),
+	getEmDashCollection("contacts", { orderBy: { created_at: "asc" } }),
+	getEmDashCollection("abouts", { limit: 1 }),
+]);
 
-// Site identity — edit these or load from a settings.json later
+// Set Route Caching for Cloudflare
+if (import.meta.env.PROD && Astro.cache?.enabled) {
+	Astro.cache.set(projectsCache);
+	Astro.cache.set(skillsCache);
+	Astro.cache.set(experiencesCache);
+	Astro.cache.set(contactsCache);
+	Astro.cache.set(aboutsCache);
+}
+
+// Map entries to their raw data structure
+const featuredProjects = allProjects.slice(0, 4);
+const skills = skillsEntries.map(s => s.data);
+const experiences = experiencesEntries.map(e => e.data);
+const contacts = contactsEntries.map(c => c.data);
+const about = aboutsEntries[0]?.data || null;
+
+// Site identity
 const title = "Kris Rodriguez";
 const titleWords = title.split(" ");
-
-const about = await getEntry("about", "index");
-const skills = await getCollection("skills");
-const experiences = await getCollection("experiences");
-const contacts = await getCollection("contacts");
 ---
 
 <Base>
@@ -160,13 +177,11 @@ const contacts = await getCollection("contacts");
 						<div class="about-right">
 							<div class="about-content">
 								{
-									about?.data?.content ? (
-										<p data-scramble>{about.data.content}</p>
+									about?.content ? (
+										<p data-scramble>{about.content}</p>
 									) : (
 										<p data-scramble>
-											Add your bio in the Keystatic admin
-											at{" "}
-											<a href="/keystatic">/keystatic</a>.
+											Add your bio in the Sanity Studio
 										</p>
 									)
 								}
@@ -201,21 +216,18 @@ const contacts = await getCollection("contacts");
 											<div class="skill-row">
 												<div class="skill-meta">
 													<span class="skill-name">
-														{skill.data.name}
+														{skill.name}
 													</span>
-													{skill.data.category && (
+													{skill.category && (
 														<span class="skill-category-badge">
-															{
-																skill.data
-																	.category
-															}
+															{skill.category}
 														</span>
 													)}
 												</div>
-												{skill.data.level && (
+												{skill.level && (
 													<div class="skill-level-indicator">
 														<span class="skill-level-label">
-															{skill.data.level}
+															{skill.level}
 														</span>
 													</div>
 												)}
@@ -258,9 +270,10 @@ const contacts = await getCollection("contacts");
 								<ProjectCard
 									title={project.data.title ?? "Untitled"}
 									summary={project.data.summary}
-									featuredImage={
-										project.data.featured_image ?? ""
-									}
+									featuredImage={project.data.featured_image?.src ? {
+										src: project.data.featured_image.src,
+										alt: project.data.featured_image.alt
+									} : null}
 									href={`/work/${project.id}`}
 									client={project.data.client}
 									year={project.data.year}
@@ -268,7 +281,7 @@ const contacts = await getCollection("contacts");
 										project.data.tag
 											? project.data.tag
 													.split(",")
-													.map((t) => t.trim())
+													.map((t: string) => t.trim())
 											: []
 									}
 								/>
@@ -281,7 +294,7 @@ const contacts = await getCollection("contacts");
 			<section class="empty-state">
 				<h2>No projects yet</h2>
 				<p>Add your first project in the admin panel.</p>
-				<a href="/keystatic" class="btn">
+				<a href="/_emdash/admin" class="btn">
 					Add a project
 				</a>
 			</section>
@@ -311,20 +324,20 @@ const contacts = await getCollection("contacts");
 									<div class="experience-row-header">
 										<div class="role-company-group">
 											<h3 class="experience-role">
-												{exp.data.role}
+												{exp.role}
 											</h3>
 											<span class="experience-company">
-												{exp.data.company}
+												{exp.company}
 											</span>
 										</div>
 										<span class="experience-dates">
-											{exp.data.start_date} —{" "}
-											{exp.data.end_date}
+											{exp.start_date} —{" "}
+											{exp.end_date}
 										</span>
 									</div>
-									{exp.data.description && (
+									{exp.description && (
 										<div class="experience-description">
-											<p>{exp.data.description}</p>
+											<p>{exp.description}</p>
 										</div>
 									)}
 								</div>
@@ -355,15 +368,15 @@ const contacts = await getCollection("contacts");
 						<div class="contact-links-list">
 							{contacts.map((link) => (
 								<a
-									href={link.data.url}
+									href={link.url}
 									class="contact-row"
 									target="_blank">
 									<span class="contact-platform">
-										{link.data.platform}
+										{link.platform}
 									</span>
 									<div class="contact-details">
 										<span class="contact-label">
-											{link.data.display_label}
+											{link.display_label}
 										</span>
 										<span class="contact-arrow">
 											&rarr;

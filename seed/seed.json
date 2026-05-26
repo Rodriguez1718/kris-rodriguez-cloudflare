@@ -1,537 +1,500 @@
 {
-	"$schema": "https://emdashcms.com/seed.schema.json",
-	"version": "1",
-	"meta": {
-		"name": "Portfolio Starter",
-		"description": "A portfolio for showcasing creative work",
-		"author": "EmDash"
-	},
-	"settings": {
-		"title": "Studio",
-		"tagline": "Design & Development"
-	},
-	"collections": [
-		{
-			"slug": "projects",
-			"label": "Projects",
-			"labelSingular": "Project",
-			"supports": [
-				"drafts",
-				"revisions",
-				"search",
-				"seo"
-			],
-			"fields": [
-				{
-					"slug": "title",
-					"label": "Title",
-					"type": "string",
-					"required": true,
-					"searchable": true
-				},
-				{
-					"slug": "featured_image",
-					"label": "Featured Image",
-					"type": "image",
-					"required": true
-				},
-				{
-					"slug": "client",
-					"label": "Client",
-					"type": "string"
-				},
-				{
-					"slug": "year",
-					"label": "Year",
-					"type": "string"
-				},
-				{
-					"slug": "summary",
-					"label": "Summary",
-					"type": "text",
-					"searchable": true
-				},
-				{
-					"slug": "content",
-					"label": "Content",
-					"type": "portableText",
-					"searchable": true
-				},
-				{
-					"slug": "gallery",
-					"label": "Gallery",
-					"type": "json"
-				},
-				{
-					"slug": "url",
-					"label": "Project URL",
-					"type": "string"
-				}
-			]
-		},
-		{
-			"slug": "pages",
-			"label": "Pages",
-			"labelSingular": "Page",
-			"supports": [
-				"drafts",
-				"revisions",
-				"search"
-			],
-			"fields": [
-				{
-					"slug": "title",
-					"label": "Title",
-					"type": "string",
-					"required": true,
-					"searchable": true
-				},
-				{
-					"slug": "content",
-					"label": "Content",
-					"type": "portableText",
-					"searchable": true
-				}
-			]
-		}
-	],
-	"taxonomies": [
-		{
-			"name": "category",
-			"label": "Categories",
-			"labelSingular": "Category",
-			"hierarchical": false,
-			"collections": [
-				"projects"
-			],
-			"terms": [
-				{
-					"slug": "branding",
-					"label": "Branding"
-				},
-				{
-					"slug": "web",
-					"label": "Web Design"
-				},
-				{
-					"slug": "print",
-					"label": "Print"
-				},
-				{
-					"slug": "photography",
-					"label": "Photography"
-				}
-			]
-		},
-		{
-			"name": "tag",
-			"label": "Tags",
-			"labelSingular": "Tag",
-			"hierarchical": false,
-			"collections": [
-				"projects"
-			],
-			"terms": [
-				{
-					"slug": "frontend",
-					"label": "Frontend"
-				},
-				{
-					"slug": "ui-ux",
-					"label": "UI/UX Design"
-				},
-				{
-					"slug": "development",
-					"label": "Web Development"
-				},
-				{
-					"slug": "backend",
-					"label": "Backend"
-				},
-				{
-					"slug": "full-stack",
-					"label": "Full Stack"
-				},
-				{
-					"slug": "react",
-					"label": "React"
-				},
-				{
-					"slug": "astro",
-					"label": "Astro"
-				},
-				{
-					"slug": "mobile",
-					"label": "Mobile"
-				}
-			]
-		}
-	],
-	"menus": [
-		{
-			"name": "primary",
-			"label": "Primary Navigation",
-			"items": [
-				{
-					"type": "custom",
-					"label": "Work",
-					"url": "/work"
-				},
-				{
-					"type": "custom",
-					"label": "Contact",
-					"url": "/contact"
-				}
-			]
-		}
-	],
-	"content": {
-		"pages": [
-			{
-				"id": "about",
-				"slug": "about",
-				"status": "published",
-				"data": {
-					"title": "About",
-					"content": [
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "We are a small design studio focused on creating meaningful work for thoughtful clients. Founded in 2020, we've had the privilege of working with brands across technology, culture, and the arts.",
-									"_key": "k1"
-								}
-							],
-							"_key": "k0"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "Our approach is simple: listen carefully, think deeply, and craft with intention. We believe that good design is invisible — it gets out of the way and lets the work speak for itself.",
-									"_key": "k3"
-								}
-							],
-							"_key": "k2"
-						},
-						{
-							"_type": "block",
-							"style": "h2",
-							"children": [
-								{
-									"_type": "span",
-									"text": "What we do",
-									"_key": "k5"
-								}
-							],
-							"_key": "k4"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "We specialize in brand identity, web design, and art direction. Whether you need a complete visual identity or a single website, we bring the same level of care and attention to every project.",
-									"_key": "k7"
-								}
-							],
-							"_key": "k6"
-						}
-					]
-				}
-			}
-		],
-		"projects": [
-			{
-				"id": "meridian-brand",
-				"slug": "meridian-brand",
-				"status": "published",
-				"data": {
-					"title": "Meridian",
-					"client": "Meridian Collective",
-					"year": "2024",
-					"summary": "A complete brand identity for a creative collective bringing together artists and technologists.",
-					"featured_image": {
-						"$media": {
-							"url": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&h=900&fit=crop",
-							"alt": "Meridian cover image",
-							"filename": "photo-1558618666-fcd25c85cd64.jpg"
-						}
-					},
-					"content": [
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "Meridian Collective needed a visual identity that could bridge the gap between traditional art and emerging technology. The challenge was to create something that felt timeless yet forward-looking.",
-									"_key": "k1"
-								}
-							],
-							"_key": "k0"
-						},
-						{
-							"_type": "block",
-							"style": "h2",
-							"children": [
-								{
-									"_type": "span",
-									"text": "The approach",
-									"_key": "k3"
-								}
-							],
-							"_key": "k2"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "We developed a wordmark that combines classical typography with subtle geometric forms. The color palette draws from both digital interfaces and natural materials, creating a bridge between worlds.",
-									"_key": "k5"
-								}
-							],
-							"_key": "k4"
-						},
-						{
-							"_type": "block",
-							"style": "h2",
-							"children": [
-								{
-									"_type": "span",
-									"text": "The result",
-									"_key": "k7"
-								}
-							],
-							"_key": "k6"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "The new identity has been applied across print and digital touchpoints, from business cards to a fully responsive website. Meridian has received positive feedback from both artists and technologists alike.",
-									"_key": "k9"
-								}
-							],
-							"_key": "k8"
-						}
-					]
-				},
-				"taxonomies": {
-					"category": [
-						"branding"
-					],
-					"tag": [
-						"frontend",
-						"ui-ux"
-					]
-				}
-			},
-			{
-				"id": "volta-web",
-				"slug": "volta-web",
-				"status": "published",
-				"data": {
-					"title": "Volta",
-					"client": "Volta Energy",
-					"year": "2024",
-					"summary": "Website design for a renewable energy startup making clean power accessible to everyone.",
-					"featured_image": {
-						"$media": {
-							"url": "https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&h=900&fit=crop",
-							"alt": "Volta cover image",
-							"filename": "photo-1497366216548-37526070297c.jpg"
-						}
-					},
-					"url": "https://volta.example.com",
-					"content": [
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "Volta is on a mission to make renewable energy accessible to everyone. They needed a website that could explain complex technology simply while inspiring trust in potential customers.",
-									"_key": "k1"
-								}
-							],
-							"_key": "k0"
-						},
-						{
-							"_type": "block",
-							"style": "h2",
-							"children": [
-								{
-									"_type": "span",
-									"text": "Design principles",
-									"_key": "k3"
-								}
-							],
-							"_key": "k2"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "We focused on clarity and warmth. The design uses generous whitespace and a vibrant green accent that evokes growth and sustainability without feeling clichéd.",
-									"_key": "k5"
-								}
-							],
-							"_key": "k4"
-						}
-					]
-				},
-				"taxonomies": {
-					"category": [
-						"web"
-					],
-					"tag": [
-						"ui-ux",
-						"development"
-					]
-				}
-			},
-			{
-				"id": "archive-print",
-				"slug": "archive-print",
-				"status": "published",
-				"data": {
-					"title": "The Archive",
-					"client": "City Museum",
-					"year": "2023",
-					"summary": "Exhibition catalog and print materials for a retrospective on modernist architecture.",
-					"featured_image": {
-						"$media": {
-							"url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1200&h=900&fit=crop",
-							"alt": "The Archive cover image",
-							"filename": "photo-1507003211169-0a1dd7228f2d.jpg"
-						}
-					},
-					"content": [
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "The Archive was a major exhibition at the City Museum, showcasing 50 years of modernist architecture through photographs, drawings, and models. We designed the complete print identity.",
-									"_key": "k1"
-								}
-							],
-							"_key": "k0"
-						},
-						{
-							"_type": "block",
-							"style": "h2",
-							"children": [
-								{
-									"_type": "span",
-									"text": "The catalog",
-									"_key": "k3"
-								}
-							],
-							"_key": "k2"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "The 240-page catalog uses a strict grid system inspired by the work being exhibited. Full-bleed photography alternates with dense text spreads, creating a rhythm that echoes the exhibition layout.",
-									"_key": "k5"
-								}
-							],
-							"_key": "k4"
-						}
-					]
-				},
-				"taxonomies": {
-					"category": [
-						"print"
-					],
-					"tag": [
-						"react",
-						"development"
-					]
-				}
-			},
-			{
-				"id": "coastal-photo",
-				"slug": "coastal-photo",
-				"status": "published",
-				"data": {
-					"title": "Coastal",
-					"client": "Personal Project",
-					"year": "2023",
-					"summary": "A photographic study of the Pacific coastline, exploring the intersection of land, sea, and sky.",
-					"featured_image": {
-						"$media": {
-							"url": "https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=1200&h=900&fit=crop",
-							"alt": "Coastal cover image",
-							"filename": "photo-1505142468610-359e7d316be0.jpg"
-						}
-					},
-					"content": [
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "Coastal began as a weekend project and grew into a year-long exploration of the Pacific shoreline. Shot entirely on medium format film, the series captures the quiet drama of the coast.",
-									"_key": "k1"
-								}
-							],
-							"_key": "k0"
-						},
-						{
-							"_type": "block",
-							"style": "h2",
-							"children": [
-								{
-									"_type": "span",
-									"text": "Process",
-									"_key": "k3"
-								}
-							],
-							"_key": "k2"
-						},
-						{
-							"_type": "block",
-							"style": "normal",
-							"children": [
-								{
-									"_type": "span",
-									"text": "Each image was made at dawn or dusk, when the light is softest and the beaches are empty. The slow process of shooting film encourages patience and intentionality — qualities that show in the final work.",
-									"_key": "k5"
-								}
-							],
-							"_key": "k4"
-						}
-					]
-				},
-				"taxonomies": {
-					"category": [
-						"photography"
-					],
-					"tag": [
-						"full-stack",
-						"astro"
-					]
-				}
-			}
-		]
-	}
+  "$schema": "https://emdashcms.com/seed.schema.json",
+  "version": "1",
+  "meta": {
+    "name": "Kris Rodriguez Portfolio",
+    "description": "Kris Rodriguez personal portfolio site powered by EmDash CMS",
+    "author": "Antigravity"
+  },
+  "settings": {
+    "title": "Kris Rodriguez",
+    "tagline": "Design & Development"
+  },
+  "collections": [
+    {
+      "slug": "projects",
+      "label": "Projects",
+      "labelSingular": "Project",
+      "supports": [
+        "drafts",
+        "revisions",
+        "search",
+        "seo"
+      ],
+      "fields": [
+        {
+          "slug": "title",
+          "label": "Title",
+          "type": "string",
+          "required": true,
+          "searchable": true
+        },
+        {
+          "slug": "featured_image",
+          "label": "Featured Image",
+          "type": "image",
+          "required": true
+        },
+        {
+          "slug": "client",
+          "label": "Client",
+          "type": "string"
+        },
+        {
+          "slug": "year",
+          "label": "Year",
+          "type": "string"
+        },
+        {
+          "slug": "summary",
+          "label": "Summary",
+          "type": "text",
+          "searchable": true
+        },
+        {
+          "slug": "content",
+          "label": "Content",
+          "type": "portableText",
+          "searchable": true
+        },
+        {
+          "slug": "url",
+          "label": "Project URL",
+          "type": "string"
+        },
+        {
+          "slug": "tag",
+          "label": "Tags",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "slug": "skills",
+      "label": "Skills",
+      "labelSingular": "Skill",
+      "supports": [
+        "drafts",
+        "search"
+      ],
+      "fields": [
+        {
+          "slug": "name",
+          "label": "Name",
+          "type": "string",
+          "required": true,
+          "searchable": true
+        },
+        {
+          "slug": "category",
+          "label": "Category",
+          "type": "string"
+        },
+        {
+          "slug": "level",
+          "label": "Level",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "slug": "experiences",
+      "label": "Experiences",
+      "labelSingular": "Experience",
+      "supports": [
+        "drafts",
+        "search"
+      ],
+      "fields": [
+        {
+          "slug": "company",
+          "label": "Company",
+          "type": "string",
+          "required": true,
+          "searchable": true
+        },
+        {
+          "slug": "role",
+          "label": "Role",
+          "type": "string",
+          "required": true,
+          "searchable": true
+        },
+        {
+          "slug": "start_date",
+          "label": "Start Date",
+          "type": "string"
+        },
+        {
+          "slug": "end_date",
+          "label": "End Date",
+          "type": "string"
+        },
+        {
+          "slug": "description",
+          "label": "Description",
+          "type": "text",
+          "searchable": true
+        }
+      ]
+    },
+    {
+      "slug": "contacts",
+      "label": "Contacts",
+      "labelSingular": "Contact",
+      "supports": [
+        "drafts"
+      ],
+      "fields": [
+        {
+          "slug": "platform",
+          "label": "Platform",
+          "type": "string",
+          "required": true
+        },
+        {
+          "slug": "url",
+          "label": "URL",
+          "type": "string",
+          "required": true
+        },
+        {
+          "slug": "display_label",
+          "label": "Display Label",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "slug": "abouts",
+      "label": "Abouts",
+      "labelSingular": "About",
+      "supports": [
+        "drafts"
+      ],
+      "fields": [
+        {
+          "slug": "content",
+          "label": "Content",
+          "type": "text",
+          "required": true
+        }
+      ]
+    },
+    {
+      "slug": "pages",
+      "label": "Pages",
+      "labelSingular": "Page",
+      "supports": [
+        "drafts",
+        "revisions",
+        "search"
+      ],
+      "fields": [
+        {
+          "slug": "title",
+          "label": "Title",
+          "type": "string",
+          "required": true,
+          "searchable": true
+        },
+        {
+          "slug": "content",
+          "label": "Content",
+          "type": "portableText",
+          "searchable": true
+        }
+      ]
+    }
+  ],
+  "taxonomies": [
+    {
+      "name": "category",
+      "label": "Categories",
+      "labelSingular": "Category",
+      "hierarchical": false,
+      "collections": [
+        "projects"
+      ],
+      "terms": [
+        {
+          "slug": "branding",
+          "label": "Branding"
+        },
+        {
+          "slug": "web",
+          "label": "Web Design"
+        },
+        {
+          "slug": "print",
+          "label": "Print"
+        },
+        {
+          "slug": "photography",
+          "label": "Photography"
+        }
+      ]
+    }
+  ],
+  "menus": [
+    {
+      "name": "primary",
+      "label": "Primary Navigation",
+      "items": [
+        {
+          "type": "custom",
+          "label": "Work",
+          "url": "/work"
+        },
+        {
+          "type": "custom",
+          "label": "Contact",
+          "url": "/contact"
+        }
+      ]
+    }
+  ],
+  "content": {
+    "abouts": [
+      {
+        "id": "about-me",
+        "slug": "about-me",
+        "status": "published",
+        "data": {
+          "content": "I’m a junior web developer and fresh graduate passionate about building clean, responsive, and user-friendly websites. I enjoy creating modern web experiences, exploring new technologies, and continuously improving my development and design skills through hands-on projects and learning opportunities."
+        }
+      }
+    ],
+    "contacts": [
+      {
+        "id": "contact-1",
+        "slug": "github",
+        "status": "published",
+        "data": {
+          "platform": "Github",
+          "url": "https://github.com/Rodriguez1718",
+          "display_label": "Rodriguez1718"
+        }
+      },
+      {
+        "id": "contact-2",
+        "slug": "email",
+        "status": "published",
+        "data": {
+          "platform": "Email",
+          "url": "https://mail.google.com/mail/?view=cm&fs=1&to=krisjohn.rodriguez@gmail.com",
+          "display_label": "krisjohn.rodriguez@gmail.com"
+        }
+      }
+    ],
+    "experiences": [
+      {
+        "id": "exp-1",
+        "slug": "exp-1",
+        "status": "published",
+        "data": {
+          "company": "N-Compass",
+          "role": "Graphics Design",
+          "start_date": "2026",
+          "end_date": "Present",
+          "description": "Was given a task of background removal for products and image sharpening for clearer display."
+        }
+      },
+      {
+        "id": "exp-2",
+        "slug": "exp-2",
+        "status": "published",
+        "data": {
+          "company": "N-Compass",
+          "role": "QA",
+          "start_date": "2026",
+          "end_date": "Present",
+          "description": "Had tried to QA on a website made by the company. Testing the features and pushing functionalities to the limits to see if any bugs appear."
+        }
+      },
+      {
+        "id": "exp-3",
+        "slug": "exp-3",
+        "status": "published",
+        "data": {
+          "company": "N-Compass",
+          "role": "Web Developer",
+          "start_date": "2026",
+          "end_date": "Present",
+          "description": "Mutiple tasks were given related to web development. Mostly making redesigns of existing templates."
+        }
+      }
+    ],
+    "skills": [
+      {
+        "id": "skill-1",
+        "slug": "web-development",
+        "status": "published",
+        "data": {
+          "name": "Web Development",
+          "category": "Frontend",
+          "level": "Advanced"
+        }
+      },
+      {
+        "id": "skill-2",
+        "slug": "ui-ux",
+        "status": "published",
+        "data": {
+          "name": "UI/UX",
+          "category": "Design",
+          "level": "Advanced"
+        }
+      },
+      {
+        "id": "skill-3",
+        "slug": "quality-assurance",
+        "status": "published",
+        "data": {
+          "name": "Quality Assurance",
+          "category": "Frontend",
+          "level": "Advanced"
+        }
+      }
+    ],
+    "projects": [
+      {
+        "id": "electrician-template",
+        "slug": "electrician-template",
+        "status": "published",
+        "data": {
+          "title": "Electrician Template",
+          "client": "N-Compass",
+          "year": "2026",
+          "summary": "An electrician Template",
+          "url": "https://electrician-template-sage.vercel.app/",
+          "tag": "Astro, HTML, Tailwind",
+          "featured_image": {
+            "$media": {
+              "url": "https://cdn.sanity.io/images/8lwtqgtp/production/3306f3ceb31a1583d1e3376505316260c47ff5a0-1901x904.png",
+              "alt": "Electrician Template",
+              "filename": "electrician-template.png"
+            }
+          },
+          "content": [
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "A reliable electrician service website that provides fast, safe, and high-quality electrical solutions for homes and businesses. It offers easy access to services such as wiring installation, electrical repairs, maintenance, lighting setup, and emergency support. Designed for convenience, the site allows users to quickly book appointments, request quotes, and get expert assistance from licensed electricians. Built with a focus on safety, efficiency, and customer satisfaction, it ensures every project is handled with precision and care.",
+                  "_key": "block1"
+                }
+              ],
+              "_key": "blockKey1"
+            }
+          ]
+        }
+      },
+      {
+        "id": "plumbing-template",
+        "slug": "plumbing-template",
+        "status": "published",
+        "data": {
+          "title": "Plumbing Template",
+          "client": "N-Compass",
+          "year": "2026",
+          "summary": "Plumbing template",
+          "url": "https://plumbing-template-sage.vercel.app/",
+          "tag": "Astro, HTML, Tailwind",
+          "featured_image": {
+            "$media": {
+              "url": "https://cdn.sanity.io/images/8lwtqgtp/production/5102a804dcda8726d14b137a9594e64d92758214-1897x908.png",
+              "alt": "Plumbing Template",
+              "filename": "plumbing-template.png"
+            }
+          },
+          "content": [
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "Plumbing template for contractors",
+                  "_key": "block1"
+                }
+              ],
+              "_key": "blockKey1"
+            }
+          ]
+        }
+      },
+      {
+        "id": "todo-website",
+        "slug": "todo-website",
+        "status": "published",
+        "data": {
+          "title": "Todo Website",
+          "client": "Personal",
+          "year": "2026",
+          "summary": "Todo website for easy tracking of tasks.",
+          "url": "https://todo-website-kappa-ten.vercel.app/",
+          "tag": "Astro, HTML, Supabase",
+          "featured_image": {
+            "$media": {
+              "url": "https://cdn.sanity.io/images/8lwtqgtp/production/ca0611b90508a6dafb8b304de7b46f2fbcbde8a3-1902x906.png",
+              "alt": "Todo Website",
+              "filename": "todo-website.png"
+            }
+          },
+          "content": [
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "A responsive todo list web application built to improve task organization and productivity. It allows users to create, update, and delete tasks through a simple and intuitive interface. The project focuses on clean UI design, efficient state handling, and user-friendly interaction to demonstrate practical front-end development skills.",
+                  "_key": "block1"
+                }
+              ],
+              "_key": "blockKey1"
+            }
+          ]
+        }
+      },
+      {
+        "id": "smart-resilience",
+        "slug": "smart-resilience",
+        "status": "published",
+        "data": {
+          "title": "Smart Resilience",
+          "client": "School",
+          "year": "2025",
+          "summary": "An IoT device use to track childs location accompanied with an app which the parents can use to know their childs location.",
+          "url": "",
+          "tag": "Flutter, IoT, UI/UX",
+          "featured_image": {
+            "$media": {
+              "url": "https://cdn.sanity.io/images/8lwtqgtp/production/a7e4a23b448dee37aacb8b47a2c5a7884dbda4e5-356x275.png",
+              "alt": "Smart Resilience",
+              "filename": "smart-resilience.png"
+            }
+          },
+          "content": [
+            {
+              "_type": "block",
+              "style": "normal",
+              "children": [
+                {
+                  "_type": "span",
+                  "text": "A safety-focused device designed for children ages 5–12, featuring GPS-based location tracking, GSM emergency alert functionality, and geofencing technology for creating map safe zones. The system notifies guardians when the device enters or exits designated areas, helping improve child safety and real-time monitoring.",
+                  "_key": "block1"
+                }
+              ],
+              "_key": "blockKey1"
+            }
+          ]
+        }
+      }
+    ],
+    "pages": []
+  }
 }

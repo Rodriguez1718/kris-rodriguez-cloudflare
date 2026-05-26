@@ -1,5 +1,5 @@
 ---
-import { getEntry } from "astro:content";
+import { getSiteSettings } from "emdash";
 import "../styles/theme.css";
 
 interface Props {
@@ -11,9 +11,9 @@ interface Props {
 
 const { title, description, image, type = "website" } = Astro.props;
 
-const settingsEntry = await getEntry("settings", "index");
-const siteTitle = settingsEntry?.data?.title || "Kris Rodriguez";
-const siteTagline = settingsEntry?.data?.tagline || "Design & Development";
+const settings = await getSiteSettings();
+const siteTitle = settings?.title || "Kris Rodriguez";
+const siteTagline = settings?.tagline || "Design & Development";
 const fullTitle = title ? `${title} — ${siteTitle}` : siteTitle;
 const siteDescription = description || siteTagline;
 
@@ -71,7 +71,7 @@ const navLinks = [
 					{navLinks.map((item) => (
 						<a href={item.url}>{item.label}</a>
 					))}
-					<a href="/keystatic" class="nav-admin">Admin</a>
+					<a href="/_emdash/admin" class="nav-admin">Admin</a>
 				</div>
 			</nav>
 		</header>

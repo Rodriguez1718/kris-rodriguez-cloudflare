@@ -1,5 +1,5 @@
 ---
-import { getCollection } from "astro:content";
+import { getEmDashCollection } from "emdash";
 import Base from "../../layouts/Base.astro";
 import ProjectCard from "../../components/ProjectCard.astro";
 
@@ -8,18 +8,18 @@ export const prerender = false;
 // Get filter from query param.
 const activeTag = Astro.url.searchParams.get("tag");
 
-const allProjects = await getCollection("projects");
+const { entries: allProjects, cacheHint } = await getEmDashCollection("projects", {
+	orderBy: { created_at: "desc" }
+});
 
-// Sort by published_at desc
-const sorted = allProjects.sort((a, b) =>
-	new Date(b.data.published_at ?? 0).getTime() -
-	new Date(a.data.published_at ?? 0).getTime()
-);
+if (import.meta.env.PROD && Astro.cache?.enabled) {
+	Astro.cache.set(cacheHint);
+}
 
 // Derive unique tags
 const tags = [
 	...new Set(
-		sorted
+		allProjects
 			.flatMap((p) =>
 				p.data.tag
 					? p.data.tag.split(",").map((t) => t.trim())
@@ -31,14 +31,14 @@ const tags = [
 
 // Filter projects by active tag if set
 const sortedProjects = activeTag
-	? sorted.filter((p) => {
+	? allProjects.filter((p) => {
 			if (!p.data.tag) return false;
 			const projTags = p.data.tag
 				.split(",")
 				.map((t) => t.trim().toLowerCase());
 			return projTags.includes(activeTag.toLowerCase());
 		})
-	: sorted;
+	: allProjects;
 ---
 
 <Base
@@ -111,7 +111,7 @@ const sortedProjects = activeTag
 							panel.
 						</p>
 						<a
-							href="/keystatic"
+							href="/_emdash/admin"
 							class="btn">
 							Add a project
 						</a>

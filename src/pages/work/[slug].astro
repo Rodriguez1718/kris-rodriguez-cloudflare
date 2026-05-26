@@ -1,5 +1,6 @@
 ---
-import { getCollection, getEntry } from "astro:content";
+import { getEmDashEntry, getEmDashCollection } from "emdash";
+import { PortableText } from "emdash/ui";
 import Base from "../../layouts/Base.astro";
 import ProjectCard from "../../components/ProjectCard.astro";
 
@@ -11,31 +12,27 @@ if (!slug) {
 	return Astro.redirect("/404");
 }
 
-const project = await getEntry("projects", slug);
+const { entry: project, cacheHint } = await getEmDashEntry("projects", slug);
 
 if (!project) {
 	return Astro.redirect("/404");
 }
 
 // Related projects: get all, sort, exclude current, take 2
-const allProjects = await getCollection("projects");
+const { entries: allProjects, cacheHint: allProjectsCache } = await getEmDashCollection("projects", {
+	orderBy: { created_at: "desc" }
+});
+
 const otherProjects = allProjects
 	.filter((p) => p.id !== project.id)
-	.sort(
-		(a, b) =>
-			new Date(b.data.published_at ?? 0).getTime() -
-			new Date(a.data.published_at ?? 0).getTime(),
-	)
 	.slice(0, 2);
 
-// Get image src for OG image
-function getImageSrc(img: unknown): string | undefined {
-	if (!img || typeof img !== "object") return undefined;
-	const image = img as Record<string, unknown>;
-	return typeof image.src === "string" ? image.src : undefined;
+if (import.meta.env.PROD && Astro.cache?.enabled) {
+	Astro.cache.set(cacheHint);
+	Astro.cache.set(allProjectsCache);
 }
 
-const featuredImgSrc = getImageSrc(project.data.featured_image);
+const featuredImgSrc = project.data.featured_image?.src ?? undefined;
 ---
 
 <Base
@@ -94,12 +91,8 @@ const featuredImgSrc = getImageSrc(project.data.featured_image);
 			project.data.featured_image && (
 				<div class="featured-image">
 					<img
-						src={getImageSrc(project.data.featured_image)}
-						alt={
-							typeof project.data.featured_image === "object"
-								? (project.data.featured_image as any).alt ?? project.data.title
-								: project.data.title
-						}
+						src={project.data.featured_image.src}
+						alt={project.data.featured_image.alt ?? project.data.title}
 						loading="lazy"
 					/>
 				</div>
@@ -109,7 +102,7 @@ const featuredImgSrc = getImageSrc(project.data.featured_image);
 		{
 			project.data.content && (
 				<div class="project-content">
-					<p>{project.data.content}</p>
+					<PortableText value={project.data.content} />
 				</div>
 			)
 		}
@@ -125,7 +118,10 @@ const featuredImgSrc = getImageSrc(project.data.featured_image);
 							<ProjectCard
 								title={p.data.title ?? "Untitled"}
 								summary={p.data.summary}
-								featuredImage={p.data.featured_image ?? null}
+								featuredImage={p.data.featured_image?.src ? {
+									src: p.data.featured_image.src,
+									alt: p.data.featured_image.alt
+								} : null}
 								href={`/work/${p.id}`}
 								client={p.data.client}
 								year={p.data.year}
