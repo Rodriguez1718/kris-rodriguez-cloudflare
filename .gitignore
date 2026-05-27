@@ -25,6 +25,8 @@ npm-debug.log*
 
 # Wrangler cache
 .wrangler/
+wrangler.jsonc
+wrangler.toml
 
 # macOS
 .DS_Store
