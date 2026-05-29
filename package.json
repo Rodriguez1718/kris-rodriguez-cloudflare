@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && node -e \"require('fs').rmSync('dist/server/wrangler.json',{force:true});require('fs').rmSync('dist/.wrangler',{recursive:true,force:true})\"",
+    "build": "astro build && node -e \"const fs=require('fs');try{fs.rmSync('dist/server/wrangler.json')}catch(e){};try{fs.rmSync('dist/.wrangler',{recursive:true})}catch(e){};try{fs.rmSync('.wrangler',{recursive:true})}catch(e){}\"",
     "preview": "astro preview",
     "deploy": "wrangler pages deploy dist",
     "typecheck": "astro check"
