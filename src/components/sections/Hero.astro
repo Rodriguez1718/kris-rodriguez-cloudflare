@@ -241,135 +241,153 @@ const titleWords = title.split(" ");
 
 <script>
 	import { gsap } from "gsap";
-	import { ScrollTrigger } from "gsap/ScrollTrigger";
+    import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-	gsap.registerPlugin(ScrollTrigger);
+    gsap.registerPlugin(ScrollTrigger);
 
-	// ─── WebGL Wave Background ────────────────────────────────────────────────
-	const initWaveBackground = () => {
-		const canvas = document.getElementById("wave-canvas") as HTMLCanvasElement;
-		if (!canvas) return;
+    // ─── WebGL Wave Background ────────────────────────────────────────────────
+    const initWaveBackground = () => {
+        const canvas = document.getElementById("wave-canvas");
+        if (!canvas) return;
 
-		import("three").then((THREE) => {
-			const scene = new THREE.Scene();
+        import("three").then((THREE) => {
+        const isMobile = window.innerWidth < 768;
+        const scene = new THREE.Scene();
 
-			const aspect = window.innerWidth / window.innerHeight;
-			const frustumSize = 20;
-			const camera = new THREE.OrthographicCamera(
-				(frustumSize * aspect) / -2,
-				(frustumSize * aspect) / 2,
-				frustumSize / 2,
-				frustumSize / -2,
-				0.1,
-				1000,
-			);
+        const aspect = window.innerWidth / window.innerHeight;
+        const frustumSize = 20;
+        const camera = new THREE.OrthographicCamera(
+            (frustumSize * aspect) / -2,
+            (frustumSize * aspect) / 2,
+            frustumSize / 2,
+            frustumSize / -2,
+            0.1,
+            1000,
+        );
 
-			const renderer = new THREE.WebGLRenderer({
-				canvas,
-				alpha: true,
-				antialias: true,
-			});
-			renderer.setSize(window.innerWidth, window.innerHeight);
-			renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        const renderer = new THREE.WebGLRenderer({
+            canvas,
+            alpha: true,
+            antialias: !isMobile,           // skip antialiasing on mobile
+            powerPreference: isMobile ? "low-power" : "high-performance",
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        // Cap pixel ratio: 1.5 on mobile, 2 on desktop
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1.5 : 2));
 
-			const planeWidth = frustumSize * aspect;
-			const planeHeight = frustumSize;
-			const geometry = new THREE.PlaneGeometry(
-				planeWidth,
-				planeHeight,
-				100,
-				100,
-			);
+        const planeWidth = frustumSize * aspect;
+        const planeHeight = frustumSize;
+        // ↓ Reduced from 100×100 → 60×60 (64% fewer vertices, barely noticeable)
+        const segments = isMobile ? 40 : 60;
+        const geometry = new THREE.PlaneGeometry(planeWidth, planeHeight, segments, segments);
 
-			const material = new THREE.ShaderMaterial({
-				uniforms: {
-					uTime: { value: 0 },
-					uMouse: { value: new THREE.Vector2(0.5, 0.5) },
-					uColorStart: { value: new THREE.Color(0x666666) },
-					uColorEnd: { value: new THREE.Color(0x999999) },
-				},
-				vertexShader: `
-					uniform float uTime;
-					uniform vec2 uMouse;
-					varying vec2 vUv;
-					varying float vElevation;
+        const material = new THREE.ShaderMaterial({
+            uniforms: {
+            uTime:       { value: 0 },
+            uMouse:      { value: new THREE.Vector2(0.5, 0.5) },
+            uColorStart: { value: new THREE.Color(0x666666) },
+            uColorEnd:   { value: new THREE.Color(0x999999) },
+            },
+            vertexShader: `
+            uniform float uTime;
+            uniform vec2 uMouse;
+            varying vec2 vUv;
+            varying float vElevation;
 
-					void main() {
-						vUv = uv;
-						vec3 pos = position;
+            void main() {
+                vUv = uv;
+                vec3 pos = position;
 
-						vec2 mousePos = vec2(uMouse.x * 20.0 - 10.0, uMouse.y * 20.0 - 10.0);
-						float distToMouse = length(pos.xy - mousePos);
-						float mouseInfluence = smoothstep(8.0, 0.0, distToMouse) * 1.5;
+                vec2 mousePos = vec2(uMouse.x * 20.0 - 10.0, uMouse.y * 20.0 - 10.0);
+                float distToMouse = length(pos.xy - mousePos);
+                float mouseInfluence = smoothstep(8.0, 0.0, distToMouse) * 1.5;
 
-						float wave1 = sin(pos.x * 0.5 + uTime * 0.5) * 0.5;
-						float wave2 = sin(pos.y * 0.3 + uTime * 0.3) * 0.5;
-						float wave3 = sin((pos.x + pos.y) * 0.4 + uTime * 0.4) * 0.3;
+                float wave1 = sin(pos.x * 0.5 + uTime * 0.5) * 0.5;
+                float wave2 = sin(pos.y * 0.3 + uTime * 0.3) * 0.5;
+                float wave3 = sin((pos.x + pos.y) * 0.4 + uTime * 0.4) * 0.3;
 
-						pos.z = wave1 + wave2 + wave3 + mouseInfluence;
-						vElevation = pos.z;
+                pos.z = wave1 + wave2 + wave3 + mouseInfluence;
+                vElevation = pos.z;
 
-						gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
-					}
-				`,
-				fragmentShader: `
-					uniform vec3 uColorStart;
-					uniform vec3 uColorEnd;
-					uniform float uTime;
-					varying vec2 vUv;
-					varying float vElevation;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+            }
+            `,
+            fragmentShader: `
+            uniform vec3 uColorStart;
+            uniform vec3 uColorEnd;
+            varying float vElevation;
 
-					void main() {
-						float elevation = vElevation * 2.0;
-						float contour = fract(elevation * 3.0);
-						float lineWidth = 0.15;
-						float line = smoothstep(0.0, lineWidth, contour) * smoothstep(1.0, 1.0 - lineWidth, contour);
-						vec3 color = mix(uColorStart, uColorEnd, vElevation * 0.5 + 0.5);
-						float alpha = mix(0.05, 0.25, 1.0 - line);
-						gl_FragColor = vec4(color, alpha);
-					}
-				`,
-				transparent: true,
-				side: THREE.DoubleSide,
-			});
+            void main() {
+                float elevation = vElevation * 2.0;
+                float contour = fract(elevation * 3.0);
+                float line = step(0.85, contour);           // step() is cheaper than two smoothsteps
+                vec3 color = mix(uColorStart, uColorEnd, vElevation * 0.5 + 0.5);
+                float alpha = mix(0.05, 0.25, line);
+                gl_FragColor = vec4(color, alpha);
+            }
+            `,
+            transparent: true,
+            side: THREE.DoubleSide,
+        });
 
-			const mesh = new THREE.Mesh(geometry, material);
-			scene.add(mesh);
-			camera.position.z = 10;
-			camera.lookAt(0, 0, 0);
+        const mesh = new THREE.Mesh(geometry, material);
+        scene.add(mesh);
+        camera.position.z = 10;
+        camera.lookAt(0, 0, 0);
 
-			const clock = new THREE.Clock();
-			const mouse = { x: 0.5, y: 0.5 };
-			const targetMouse = { x: 0.5, y: 0.5 };
+        const clock = new THREE.Clock();
+        const mouse    = { x: 0.5, y: 0.5 };
+        const targetMouse = { x: 0.5, y: 0.5 };
 
-			window.addEventListener("mousemove", (e) => {
-				targetMouse.x = e.clientX / window.innerWidth;
-				targetMouse.y = 1.0 - e.clientY / window.innerHeight;
-			});
+        // ↓ Skip mouse uniform update if movement is negligible
+        const MOUSE_THRESHOLD = 0.001;
 
-			const animate = () => {
-				material.uniforms.uTime.value = clock.getElapsedTime();
-				mouse.x += (targetMouse.x - mouse.x) * 0.05;
-				mouse.y += (targetMouse.y - mouse.y) * 0.05;
-				material.uniforms.uMouse.value.set(mouse.x, mouse.y);
-				renderer.render(scene, camera);
-				requestAnimationFrame(animate);
-			};
-			animate();
+        window.addEventListener("mousemove", (e) => {
+            targetMouse.x = e.clientX / window.innerWidth;
+            targetMouse.y = 1.0 - e.clientY / window.innerHeight;
+        }, { passive: true });
 
-			window.addEventListener("resize", () => {
-				const aspect = window.innerWidth / window.innerHeight;
-				const frustumSize = 20;
-				camera.left = (frustumSize * aspect) / -2;
-				camera.right = (frustumSize * aspect) / 2;
-				camera.top = frustumSize / 2;
-				camera.bottom = frustumSize / -2;
-				camera.updateProjectionMatrix();
-				renderer.setSize(window.innerWidth, window.innerHeight);
-				renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-			});
-		});
-	};
+        // ↓ Pause loop when hero is off-screen
+        let isVisible = true;
+        let rafId;
+
+        const observer = new IntersectionObserver(
+            ([entry]) => { isVisible = entry.isIntersecting; },
+            { threshold: 0 }
+        );
+        observer.observe(canvas);
+
+        const animate = () => {
+            rafId = requestAnimationFrame(animate);
+            if (!isVisible) return;           // skip render entirely when scrolled away
+
+            material.uniforms.uTime.value = clock.getElapsedTime();
+
+            const dx = targetMouse.x - mouse.x;
+            const dy = targetMouse.y - mouse.y;
+            if (Math.abs(dx) > MOUSE_THRESHOLD || Math.abs(dy) > MOUSE_THRESHOLD) {
+            mouse.x += dx * 0.05;
+            mouse.y += dy * 0.05;
+            material.uniforms.uMouse.value.set(mouse.x, mouse.y);
+            }
+
+            renderer.render(scene, camera);
+        };
+        animate();
+
+        window.addEventListener("resize", () => {
+            const aspect = window.innerWidth / window.innerHeight;
+            const fs = 20;
+            camera.left   = (fs * aspect) / -2;
+            camera.right  = (fs * aspect) / 2;
+            camera.top    = fs / 2;
+            camera.bottom = fs / -2;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth < 768 ? 1.5 : 2));
+        });
+        });
+    };
 
 	// ─── Hero Scroll Zoom ─────────────────────────────────────────────────────
 	const initHeroScroll = () => {
@@ -466,14 +484,14 @@ const titleWords = title.split(" ");
 	};
 
 	// ─── Boot ─────────────────────────────────────────────────────────────────
-	const init = () => {
-		initWaveBackground();
-		initHeroScroll();
-	};
+    const init = () => {
+        initWaveBackground();
+        initHeroScroll();
+    };
 
-	if (document.readyState === "loading") {
-		document.addEventListener("DOMContentLoaded", init);
-	} else {
-		init();
-	}
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init);
+    } else {
+        init();
+    }
 </script>
