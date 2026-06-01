@@ -609,8 +609,7 @@ const navLinks = [
 
 			/* Hide default cursor on desktop */
 			@media (hover: hover) {
-				body { cursor: none; }
-				a, button, [role="button"], .magnetic-zone { cursor: none; }
+				*, *::before, *::after { cursor: none !important; }
 			}
 
 			/* ── Loader ── */
@@ -699,7 +698,6 @@ const navLinks = [
 				width: 100px;
 				height: 100px;
 				border-radius: 50%;
-				cursor: pointer;
 				margin-top: -25px;
 				margin-bottom: -25px;
 			}
@@ -710,7 +708,6 @@ const navLinks = [
 				gap: 10px;
 				background: none;
 				border: none;
-				cursor: pointer;
 				color: var(--color-text);
 				padding: 0;
 				will-change: transform;
