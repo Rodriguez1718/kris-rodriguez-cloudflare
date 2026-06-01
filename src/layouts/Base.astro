@@ -48,6 +48,15 @@ const navLinks = [
 		/>
 	</head>
 	<body>
+		<!-- Custom Cursor -->
+		<div class="cursor-dot" id="cursorDot"></div>
+		<div class="cursor-brackets" id="cursorBrackets">
+			<span class="bracket tl"></span>
+			<span class="bracket tr"></span>
+			<span class="bracket bl"></span>
+			<span class="bracket br"></span>
+		</div>
+
 		<!-- Page Loader -->
 		<div class="page-loader" id="pageLoader">
 			<div class="loader-grid" id="gridLines"></div>
@@ -342,6 +351,97 @@ const navLinks = [
 			});
 		</script>
 
+		<script is:inline>
+			// ── Custom Magnetic Cursor ──
+			(function() {
+				const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+				if (isTouchDevice || window.innerWidth < 768) return;
+
+				const dot = document.getElementById('cursorDot');
+				const brackets = document.getElementById('cursorBrackets');
+				if (!dot || !brackets) return;
+
+				let mouseX = 0, mouseY = 0;
+				let dotX = 0, dotY = 0;
+				let bracketsX = 0, bracketsY = 0;
+				let hoveredEl = null;
+				let isHovering = false;
+
+				document.addEventListener('mousemove', (e) => {
+					mouseX = e.clientX;
+					mouseY = e.clientY;
+				});
+
+				function animate() {
+					if (isHovering && hoveredEl) {
+						const rect = hoveredEl.getBoundingClientRect();
+						const targetX = rect.left + rect.width / 2;
+						const targetY = rect.top + rect.height / 2;
+						const bw = rect.width + 16;
+						const bh = rect.height + 16;
+
+						dotX += (mouseX - dotX) * 0.15;
+						dotY += (mouseY - dotY) * 0.15;
+
+						bracketsX += (targetX - bracketsX) * 0.12;
+						bracketsY += (targetY - bracketsY) * 0.12;
+
+						brackets.style.left = (bracketsX - bw / 2) + 'px';
+						brackets.style.top = (bracketsY - bh / 2) + 'px';
+						brackets.style.width = bw + 'px';
+						brackets.style.height = bh + 'px';
+					} else {
+						dotX += (mouseX - dotX) * 0.2;
+						dotY += (mouseY - dotY) * 0.2;
+
+						bracketsX = dotX;
+						bracketsY = dotY;
+
+						brackets.style.left = (bracketsX - 14) + 'px';
+						brackets.style.top = (bracketsY - 14) + 'px';
+						brackets.style.width = '28px';
+						brackets.style.height = '28px';
+					}
+
+					dot.style.left = dotX + 'px';
+					dot.style.top = dotY + 'px';
+
+					requestAnimationFrame(animate);
+				}
+				animate();
+
+				const hoverTargets = 'a, button, [role="button"], .skill-row, .contact-row, .timeline-card-wrapper, .project-card, .card-link, .menu-nav-item';
+
+				document.addEventListener('mouseover', (e) => {
+					const target = e.target.closest(hoverTargets);
+					if (target) {
+						hoveredEl = target;
+						isHovering = true;
+						brackets.classList.add('hovering');
+					}
+				});
+
+				document.addEventListener('mouseout', (e) => {
+					const target = e.target.closest(hoverTargets);
+					if (target) {
+						hoveredEl = null;
+						isHovering = false;
+						brackets.classList.remove('hovering');
+					}
+				});
+
+				document.addEventListener('mouseleave', () => {
+					dot.style.opacity = '0';
+					brackets.style.opacity = '0';
+				});
+
+				document.addEventListener('mouseenter', () => {
+					dot.style.opacity = '1';
+					brackets.style.opacity = '1';
+				});
+			})();
+		</script>
+
 		<style is:global>
 			@layer base;
 
@@ -432,6 +532,87 @@ const navLinks = [
 		</style>
 
 		<style is:global>
+			/* ── Custom Cursor ── */
+			.cursor-dot {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 6px;
+				height: 6px;
+				background: #fff;
+				border-radius: 50%;
+				pointer-events: none;
+				z-index: 99999;
+				transform: translate(-50%, -50%);
+				transition: opacity 0.3s ease;
+				mix-blend-mode: difference;
+			}
+
+			.cursor-brackets {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 28px;
+				height: 28px;
+				pointer-events: none;
+				z-index: 99998;
+				animation: cursor-spin 4s linear infinite;
+				transition: width 0.4s cubic-bezier(0.16,1,0.3,1), height 0.4s cubic-bezier(0.16,1,0.3,1);
+				mix-blend-mode: difference;
+			}
+
+			.cursor-brackets.hovering {
+				animation: none;
+				border-radius: 0;
+			}
+
+			@keyframes cursor-spin {
+				from { rotate: 0deg; }
+				to { rotate: 360deg; }
+			}
+
+			.bracket {
+				position: absolute;
+				width: 8px;
+				height: 8px;
+				border-color: #fff;
+				border-style: solid;
+				border-width: 0;
+				transition: width 0.4s cubic-bezier(0.16,1,0.3,1), height 0.4s cubic-bezier(0.16,1,0.3,1);
+			}
+
+			.bracket.tl {
+				top: 0; left: 0;
+				border-top-width: 2px;
+				border-left-width: 2px;
+			}
+			.bracket.tr {
+				top: 0; right: 0;
+				border-top-width: 2px;
+				border-right-width: 2px;
+			}
+			.bracket.bl {
+				bottom: 0; left: 0;
+				border-bottom-width: 2px;
+				border-left-width: 2px;
+			}
+			.bracket.br {
+				bottom: 0; right: 0;
+				border-bottom-width: 2px;
+				border-right-width: 2px;
+			}
+
+			/* Hide on mobile/touch */
+			@media (max-width: 768px), (hover: none) {
+				.cursor-dot, .cursor-brackets { display: none !important; }
+			}
+
+			/* Hide default cursor on desktop */
+			@media (hover: hover) {
+				body { cursor: none; }
+				a, button, [role="button"], .magnetic-zone { cursor: none; }
+			}
+
 			/* ── Loader ── */
 			.page-loader {
 				position: fixed;
