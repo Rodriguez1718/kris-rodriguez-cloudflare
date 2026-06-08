@@ -452,3 +452,37 @@ const { experiences } = Astro.props;
 		}
 	}
 </style>
+
+
+<script>
+	import { gsap } from 'gsap';
+	import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+	gsap.registerPlugin(ScrollTrigger);
+
+	const initExperienceAnimations = () => {
+		const cards = document.querySelectorAll('.experience-card');
+		
+		cards.forEach((card) => {
+			gsap.from(card, {
+				scrollTrigger: {
+					trigger: card,
+					start: 'top bottom-=100',
+					end: 'top center',
+					toggleActions: 'play none none reverse',
+				},
+				opacity: 0,
+				y: 50,
+				scale: 0.95,
+				duration: 0.6,
+				ease: 'power2.out',
+			});
+		});
+	};
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', initExperienceAnimations);
+	} else {
+		initExperienceAnimations();
+	}
+</script>

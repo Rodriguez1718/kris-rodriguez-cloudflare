@@ -105,7 +105,7 @@ const { projects } = Astro.props;
 	}
 
 	.featured-canvas {
-		position: absolute;
+		position: fixed;
 		top: 0;
 		left: 0;
 		width: 100%;
@@ -532,9 +532,14 @@ const { projects } = Astro.props;
 				const sectionHeight = section.offsetHeight;
 				const windowHeight = window.innerHeight;
 
+				const top = Math.max(0, rect.top);
+				const bottom = Math.min(windowHeight, rect.bottom);
+
 				if (rect.bottom < 0 || rect.top > windowHeight) {
+					canvas.style.clipPath = 'inset(0px 0px 100% 0px)';
 					canvas.classList.remove('visible');
 				} else {
+					canvas.style.clipPath = `inset(${top}px 0px ${windowHeight - bottom}px 0px)`;
 					canvas.classList.add('visible');
 				}
 
@@ -593,5 +598,42 @@ const { projects } = Astro.props;
 		document.addEventListener('DOMContentLoaded', initFeaturedBackground);
 	} else {
 		initFeaturedBackground();
+	}
+
+	// Magnetic button effect for "View All Projects"
+	const initMagneticButton = () => {
+		const magneticZone = document.querySelector('.featured .magnetic-zone') as HTMLElement;
+		const btn = magneticZone?.querySelector('.featured-link-btn') as HTMLElement;
+		const strength = 0.35;
+
+		if (magneticZone && btn) {
+			let rect: DOMRect | null = null;
+
+			magneticZone.addEventListener('pointerenter', () => {
+				rect = magneticZone.getBoundingClientRect();
+			});
+
+			magneticZone.addEventListener('mousemove', (e: MouseEvent) => {
+				const currentRect = rect || magneticZone.getBoundingClientRect();
+				rect = currentRect;
+				const x = ((e.clientX - currentRect.left) / currentRect.width - 0.5) * currentRect.width;
+				const y = ((e.clientY - currentRect.top) / currentRect.height - 0.5) * currentRect.height;
+
+				btn.style.transform = `translate(${x * strength}px, ${y * strength}px)`;
+				btn.style.transition = 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
+			});
+
+			magneticZone.addEventListener('mouseleave', () => {
+				rect = null;
+				btn.style.transform = 'translate(0, 0)';
+				btn.style.transition = 'transform 0.7s cubic-bezier(0.16, 1, 0.3, 1)';
+			});
+		}
+	};
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', initMagneticButton);
+	} else {
+		initMagneticButton();
 	}
 </script>
