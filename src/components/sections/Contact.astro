@@ -1,8 +1,8 @@
 ---
 interface Contact {
-	platform: string;
-	display_label: string;
-	url: string;
+	platform?: string;
+	display_label?: string;
+	url?: string;
 }
 
 interface Props {
@@ -36,15 +36,15 @@ const { contacts } = Astro.props;
 					<div class="contact-links-list">
 						{contacts.map((link: Contact) => (
 							<a
-								href={link.url}
+								href={link.url ?? '#'}
 								class="contact-row"
 								target="_blank">
 								<span class="contact-platform">
-									{link.platform}
+									{link.platform ?? 'Platform'}
 								</span>
 								<div class="contact-details">
 									<span class="contact-label">
-										{link.display_label}
+										{link.display_label ?? 'Contact'}
 									</span>
 									<span class="contact-arrow">
 										&rarr;

@@ -2,8 +2,8 @@
 interface Experience {
 	role: string;
 	company: string;
-	start_date: string;
-	end_date: string;
+	start_date?: string;
+	end_date?: string;
 	description?: string;
 }
 
@@ -58,7 +58,7 @@ const { experiences } = Astro.props;
 												{exp.company}
 											</span>
 											<span class="experience-card-dates">
-												{exp.start_date} — {exp.end_date}
+												{exp.start_date ?? 'N/A'} — {exp.end_date ?? 'Present'}
 											</span>
 										</div>
 										{exp.description && (

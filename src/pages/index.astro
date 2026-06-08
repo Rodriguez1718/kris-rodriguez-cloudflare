@@ -1,7 +1,6 @@
 ---
 import { getEmDashCollection } from "emdash";
 import Base from "../layouts/Base.astro";
-import ProjectCard from "../components/ProjectCard.astro";
 import Hero from "../components/sections/Hero.astro";
 import About from "../components/sections/About.astro";
 import Skills from "../components/sections/Skills.astro";
@@ -24,7 +23,7 @@ const [
 	getEmDashCollection("abouts", { limit: 1 }),
 ]);
 
-// Set Route Caching
+// Set Route Caching for Cloudflare
 if (import.meta.env.PROD && Astro.cache?.enabled) {
 	Astro.cache.set(projectsCache);
 	Astro.cache.set(skillsCache);
@@ -33,6 +32,7 @@ if (import.meta.env.PROD && Astro.cache?.enabled) {
 	Astro.cache.set(aboutsCache);
 }
 
+// Map entries to their raw data structure
 const featuredProjects = allProjects.slice(0, 4);
 const skills = skillsEntries.map(s => s.data);
 const experiences = experiencesEntries.map(e => e.data);
@@ -42,7 +42,7 @@ const about = aboutsEntries[0]?.data || null;
 
 <Base>
 	<Hero />
-	
+
 	<div class="horizontal-scroll-container">
 		<div class="horizontal-track">
 			<!-- Motion Path SVG wrapper (placed inside track to slide along horizontally!) -->
@@ -75,24 +75,19 @@ const about = aboutsEntries[0]?.data || null;
 				</div>
 			</div>
 
-			<About content={about?.content as string | undefined} />
-
-			<Skills skills={skills as any} />
+			<About content={about?.content} />
+			<Skills skills={skills} />
 		</div>
 	</div>
 
 	<FeaturedWorks projects={featuredProjects} />
-
-	<Experience experiences={experiences as any} />
-
-	<Contact contacts={contacts as any} />
+	<Experience experiences={experiences} />
+	<Contact contacts={contacts} />
 </Base>
 
 <style>
-
 	.horizontal-scroll-container {
 		width: 100%;
-		max-width: 100vw;
 		height: 100vh;
 		position: relative;
 		overflow: hidden;
@@ -136,25 +131,20 @@ const about = aboutsEntries[0]?.data || null;
 		will-change: transform;
 	}
 
-	.projects-grid {
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		gap: var(--spacing-2xl);
-	}
-
 	@media (max-width: 768px) {
-		.projects-grid {
-			grid-template-columns: 1fr;
-		}
-
-		.section-header {
-			flex-direction: column;
-			gap: var(--spacing-sm);
-			align-items: flex-start;
-		}
-
 		.horizontal-scroll-container {
-			overflow-x: hidden;
+			height: auto;
+			overflow: visible;
+		}
+
+		.horizontal-track {
+			flex-direction: column;
+			width: 100%;
+			height: auto;
+		}
+
+		.motion-path-container {
+			display: none;
 		}
 	}
 </style>
@@ -166,55 +156,12 @@ const about = aboutsEntries[0]?.data || null;
 
 	gsap.registerPlugin(ScrollTrigger, MotionPathPlugin);
 
-	// Text scramble effect function
-	function initScrambleEffect(scrambleEl: Element) {
-		const chars = "!<>-_\\/[]{}—=+*^?#________";
-		const originalText = scrambleEl.textContent || "";
+	// Check if simple scroll mode is enabled
+	const isSimpleScroll = document.body.classList.contains('simple-scroll');
 
-		// Create random reveal order
-		const indices = Array.from(
-			{ length: originalText.length },
-			(_, i) => i,
-		);
-		const shuffled = indices.sort(() => Math.random() - 0.5);
-		const revealOrder = new Map(shuffled.map((idx, order) => [idx, order]));
-
-		let frame = 0;
-		const maxFrames = originalText.length * 0.5;
-
-		const interval = setInterval(() => {
-			if (!scrambleEl) {
-				clearInterval(interval);
-				return;
-			}
-
-			scrambleEl.textContent = originalText
-				.split("")
-				.map((char, index) => {
-					const revealAt = revealOrder.get(index) || 0;
-					if (frame > revealAt) {
-						return originalText[index];
-					}
-					return chars[Math.floor(Math.random() * chars.length)];
-				})
-				.join("");
-
-			if (frame >= maxFrames) {
-				scrambleEl.textContent = originalText;
-				clearInterval(interval);
-			}
-
-			frame += 2;
-		}, 12);
-	}
-
-	const initHorizontalScroll = () => {
-		// Initial state for flying element and section elements (hidden and translated down)
-		gsap.set(".flying-element", {
-			opacity: 0,
-			scale: 0.5,
-		});
-
+	// Only run animations if NOT in simple scroll mode
+	if (!isSimpleScroll) {
+		// Initial state for about and skills section elements (hidden and translated down)
 		gsap.set(
 			".about-number, .about-heading, .about-badge, .about-content > *",
 			{
@@ -241,34 +188,22 @@ const about = aboutsEntries[0]?.data || null;
 			},
 		});
 
-		// Glide the rotating brutalist star along the SVG dashed bezier curve with fade in
-		horizontalTl
-			.to(
-				".flying-element",
-				{
-					opacity: 1,
-					scale: 1,
-					duration: 0.5,
-					ease: "power2.out",
+		// Glide the rotating brutalist star along the SVG dashed bezier curve
+		horizontalTl.to(
+			".flying-element",
+			{
+				motionPath: {
+					path: "#flying-path",
+					align: "#flying-path",
+					autoRotate: false,
+					alignOrigin: [0.5, 0.5],
 				},
-				0,
-			)
-			.to(
-				".flying-element",
-				{
-					motionPath: {
-						path: "#flying-path",
-						align: "#flying-path",
-						autoRotate: false,
-						alignOrigin: [0.5, 0.5],
-					},
-					rotation: 720,
-					duration: 3.0,
-					ease: "none",
-				},
-				0,
-			)
-
+				rotation: 720,
+				duration: 3.0,
+				ease: "none",
+			},
+			0,
+		);
 
 		// 1. Fade up the about section contents (starts immediately, completes fully before slide)
 		horizontalTl
@@ -280,14 +215,6 @@ const about = aboutsEntries[0]?.data || null;
 					duration: 0.8,
 					stagger: 0.05,
 					ease: "power2.out",
-					onStart: () => {
-						// Trigger scramble when content starts fading in
-						const scrambleEl =
-							document.querySelector("[data-scramble]");
-						if (scrambleEl) {
-							initScrambleEffect(scrambleEl);
-						}
-					},
 				},
 				0,
 			)
@@ -313,259 +240,14 @@ const about = aboutsEntries[0]?.data || null;
 				},
 				1.8, // Starts at t = 1.8 (mid-to-end of the slide animation)
 			);
-	};
-
-	// Start animation when DOM is fully built
-	if (document.readyState === "loading") {
-		document.addEventListener("DOMContentLoaded", () => {
-			initHorizontalScroll();
-		});
 	} else {
-		initHorizontalScroll();
-	}
-
-	// Featured Projects Timeline Animation
-	const initFeaturedTimeline = () => {
-		const timelineItems = gsap.utils.toArray(".timeline-item");
-		if (timelineItems.length === 0) return;
-
-		timelineItems.forEach((item: any) => {
-			const dot = item.querySelector(".timeline-dot");
-			const card = item.querySelector(".timeline-card-wrapper");
-			const line = item.querySelector(".timeline-line");
-
-			// Fade in / up the card wrapper
-			gsap.fromTo(
-				card,
-				{ opacity: 0, y: 40 },
-				{
-					opacity: 1,
-					y: 0,
-					duration: 0.8,
-					ease: "power2.out",
-					scrollTrigger: {
-						trigger: item,
-						start: "top 85%",
-						toggleActions: "play none none reverse",
-					},
-				},
-			);
-
-			// Activate/glow the dot
-			if (dot) {
-				gsap.fromTo(
-					dot,
-					{
-						scale: 0.8,
-						backgroundColor: "var(--color-bg)",
-						borderColor: "var(--color-text)",
-					},
-					{
-						scale: 1.2,
-						backgroundColor: "var(--color-accent)",
-						borderColor: "var(--color-accent)",
-						scrollTrigger: {
-							trigger: item,
-							start: "top 70%",
-							end: "bottom 30%",
-							toggleActions: "play reverse play reverse",
-						},
-					},
-				);
-			}
-
-			// Grow/draw the vertical line segment
-			if (line) {
-				gsap.fromTo(
-					line,
-					{ scaleY: 0 },
-					{
-						scaleY: 1,
-						transformOrigin: "top center",
-						ease: "none",
-						scrollTrigger: {
-							trigger: item,
-							start: "top 70%",
-							end: "bottom 70%",
-							scrub: true,
-						},
-					},
-				);
-			}
-		});
-	};
-
-	// Experience Section GSAP Transitions - Pinned Cards with Blur
-	const initExperienceTimeline = () => {
-		const cards = gsap.utils.toArray<HTMLElement>(".experience-card");
-		if (cards.length === 0) return;
-
-		// Fade in header elements
-		gsap.fromTo(
-			".experience-number, .experience-heading, .experience-intro",
-			{ opacity: 0, y: 30 },
-			{
-				opacity: 1,
-				y: 0,
-				stagger: 0.1,
-				scrollTrigger: {
-					trigger: ".experience-header",
-					start: "top 80%",
-					end: "top 50%",
-					scrub: true,
-				},
-			}
+		// In simple scroll mode, ensure all elements are visible immediately
+		const elements = document.querySelectorAll(
+			".about-number, .about-heading, .about-badge, .about-content > *, .skills-number, .skills-heading, .skills-intro, .skill-row"
 		);
-
-		cards.forEach((card, index) => {
-			// Fade in card content on scroll
-			gsap.fromTo(
-				card.querySelector(".experience-card-content"),
-				{ opacity: 0, y: 30 },
-				{
-					opacity: 1,
-					y: 0,
-					scrollTrigger: {
-						trigger: card,
-						start: "top 80%",
-						end: "top 50%",
-						scrub: true,
-					},
-				}
-			);
-
-			// Skip animation for last card
-			if (index === cards.length - 1) return;
-
-			// Scale down and move down animation
-			gsap.to(card, {
-				scale: 0.9,
-				y: 150,
-				scrollTrigger: {
-					trigger: cards[index + 1],
-					start: "top 70%",
-					end: "top 10vh",
-					scrub: true,
-				},
-			});
-
-			// Blur animation - happens very early
-			gsap.to(card, {
-				filter: "blur(8px)",
-				scrollTrigger: {
-					trigger: cards[index + 1],
-					start: "top 490vh",
-					end: "top 10vh",
-					scrub: true,
-				},
-			});
+		elements.forEach((el) => {
+			(el as HTMLElement).style.opacity = "1";
+			(el as HTMLElement).style.transform = "none";
 		});
-	};
-
-	// Magnetic Buttons
-	const initMagneticButtons = () => {
-		const zones = document.querySelectorAll(".magnetic-zone");
-		const strength = 0.35;
-
-		zones.forEach((zone: any) => {
-			const btn = zone.querySelector(".featured-link-btn");
-			if (!btn) return;
-
-			let rect: DOMRect | null = null;
-
-			zone.addEventListener("pointerenter", () => {
-				rect = zone.getBoundingClientRect();
-			});
-
-			zone.addEventListener("mousemove", (e: MouseEvent) => {
-				const currentRect = rect || zone.getBoundingClientRect();
-				rect = currentRect;
-				const x = gsap.utils.mapRange(
-					currentRect.left,
-					currentRect.right,
-					-currentRect.width / 2,
-					currentRect.width / 2,
-					e.clientX,
-				);
-				const y = gsap.utils.mapRange(
-					currentRect.top,
-					currentRect.bottom,
-					-currentRect.height / 2,
-					currentRect.height / 2,
-					e.clientY,
-				);
-
-				gsap.to(btn, {
-					x: x * strength,
-					y: y * strength,
-					duration: 0.4,
-					ease: "power2.out",
-					overwrite: true,
-				});
-			});
-
-			zone.addEventListener("mouseleave", () => {
-				rect = null;
-				gsap.to(btn, {
-					x: 0,
-					y: 0,
-					duration: 0.7,
-					ease: "elastic.out(1, 0.4)",
-					overwrite: true,
-				});
-			});
-		});
-	};
-
-	// Contact section fade in
-	const initContactAnimation = () => {
-		// Fade in left side
-		gsap.fromTo(
-			".contact-number, .contact-heading, .contact-intro",
-			{ opacity: 0, y: 30 },
-			{
-				opacity: 1,
-				y: 0,
-				stagger: 0.1,
-				scrollTrigger: {
-					trigger: ".contact",
-					start: "top 80%",
-					end: "top 50%",
-					scrub: true,
-				},
-			}
-		);
-
-		// Fade in contact rows
-		gsap.fromTo(
-			".contact-row",
-			{ opacity: 0, x: 30 },
-			{
-				opacity: 1,
-				x: 0,
-				stagger: 0.1,
-				scrollTrigger: {
-					trigger: ".contact-links-list",
-					start: "top 80%",
-					end: "top 50%",
-					scrub: true,
-				},
-			}
-		);
-	};
-
-	// Initialize features
-	if (document.readyState === "loading") {
-		document.addEventListener("DOMContentLoaded", () => {
-			initFeaturedTimeline();
-			initExperienceTimeline();
-			initMagneticButtons();
-			initContactAnimation();
-		});
-	} else {
-		initFeaturedTimeline();
-		initExperienceTimeline();
-		initMagneticButtons();
-		initContactAnimation();
 	}
 </script>

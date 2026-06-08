@@ -392,6 +392,11 @@ const titleWords = title.split(" ");
 
 	// ─── Hero Scroll Zoom ─────────────────────────────────────────────────────
 	const initHeroScroll = () => {
+		// Double-check simple scroll mode before initializing
+		if (document.body.classList.contains('simple-scroll')) {
+			return; // Exit early if in simple scroll mode
+		}
+
 		const hero = document.querySelector(".hero");
 		const heroInner = document.querySelector(".hero-inner") as HTMLElement;
 		const zoomLetter = document.querySelector(".zoom-letter") as HTMLElement;
@@ -486,8 +491,15 @@ const titleWords = title.split(" ");
 
 	// ─── Boot ─────────────────────────────────────────────────────────────────
     const init = () => {
+        // Check if simple scroll mode is enabled
+        const isSimpleScroll = document.body.classList.contains('simple-scroll');
+        
         initWaveBackground();
-        initHeroScroll();
+        
+        // Only initialize scroll animations if NOT in simple scroll mode
+        if (!isSimpleScroll) {
+            initHeroScroll();
+        }
     };
 
     if (document.readyState === "loading") {
