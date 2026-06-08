@@ -105,7 +105,7 @@ const { projects } = Astro.props;
 	}
 
 	.featured-canvas {
-		position: fixed;
+		position: absolute;
 		top: 0;
 		left: 0;
 		width: 100%;
@@ -532,14 +532,9 @@ const { projects } = Astro.props;
 				const sectionHeight = section.offsetHeight;
 				const windowHeight = window.innerHeight;
 
-				const top = Math.max(0, rect.top);
-				const bottom = Math.min(windowHeight, rect.bottom);
-
 				if (rect.bottom < 0 || rect.top > windowHeight) {
-					canvas.style.clipPath = 'inset(0px 0px 100% 0px)';
 					canvas.classList.remove('visible');
 				} else {
-					canvas.style.clipPath = `inset(${top}px 0px ${windowHeight - bottom}px 0px)`;
 					canvas.classList.add('visible');
 				}
 

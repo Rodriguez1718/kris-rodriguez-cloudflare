@@ -655,9 +655,15 @@ const navLinks = [
 
 			/* ── Simple Scroll Mode ── */
 			body.simple-scroll .pin-spacer {
-				display: contents !important;
+				display: block !important;
 				height: auto !important;
 				padding: 0 !important;
+				position: static !important;
+			}
+
+			body.simple-scroll .pin-spacer > * {
+				position: static !important;
+				transform: none !important;
 			}
 
 			body.simple-scroll .hero {
