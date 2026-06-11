@@ -114,6 +114,12 @@ const navLinks = [
 			<slot />
 		</main>
 
+		<button class="chat-button" id="chatButton" aria-label="Open chat">
+			<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+			</svg>
+		</button>
+
 		<footer class="site-footer">
 			<div class="footer-content">
 				<!-- Top row -->
@@ -483,6 +489,46 @@ const navLinks = [
 			})();
 		</script>
 
+		<script type="module">
+			import Chatbot from "https://cdn.jsdelivr.net/npm/flowise-embed/dist/web.js"
+			Chatbot.init({
+				chatflowid: "04cfc748-8fec-4eb6-b288-0d800414332b",
+				apiHost: "https://cloud.flowiseai.com",
+				theme: {
+					button: {
+						backgroundColor: "transparent",
+						right: 20,
+						bottom: 20,
+						size: "medium",
+						iconColor: "white",
+						customIconSrc: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3C/svg%3E"
+					},
+					chatWindow: {
+						showAgentMessages: true
+					}
+				}
+			})
+
+			document.addEventListener('DOMContentLoaded', () => {
+				// Give Flowise a moment to render its shadow DOM
+				setTimeout(() => {
+					const flowiseEl = document.querySelector('flowise-chatbot')
+
+					// Hide the default Flowise button inside shadow DOM
+					const shadowBtn = flowiseEl?.shadowRoot?.querySelector('button')
+					if (shadowBtn) {
+						shadowBtn.style.display = 'none'
+					}
+
+					// Your button now does the toggling
+					document.getElementById('chatButton').addEventListener('click', () => {
+						flowiseEl?.shadowRoot?.querySelector('button')?.click()
+					})
+				}, 500)
+			})
+		</script>
+
+
 		<style is:global>
 			@layer base;
 
@@ -642,6 +688,52 @@ const navLinks = [
 				border-bottom-width: 2px;
 				border-right-width: 2px;
 			}
+
+			/* ── Chat Button ── */
+			.chat-button {
+				position: fixed;
+				bottom: var(--spacing-xl);
+				right: var(--spacing-xl);
+				width: 60px;
+				height: 60px;
+				border-radius: 50%;
+				background: var(--color-text);
+				color: var(--color-bg);
+				border: 1px solid var(--color-text);
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				cursor: pointer;
+				z-index: 1000;
+				transition: all 0.3s ease;
+			}
+
+			.chat-button:hover {
+				background: var(--color-bg);
+				color: var(--color-text);
+				transform: scale(1.1);
+			}
+
+			.chat-button svg {
+				width: 24px;
+				height: 24px;
+			}
+
+			/* Hide Flowise's own button, keep only ours */
+			.flowise-chatbot::part(button),
+			.flowise-chatbot > div > button {
+				display: none !important;
+			}
+
+			@media (max-width: 768px) {
+				.chat-button {
+					width: 50px;
+					height: 50px;
+					bottom: var(--spacing-md);
+					right: var(--spacing-md);
+				}
+			}
+
 
 			/* Hide on mobile/touch */
 			@media (max-width: 768px), (hover: none) {

@@ -130,23 +130,6 @@ const about = aboutsEntries[0]?.data || null;
 		height: 100vh;
 		will-change: transform;
 	}
-
-	@media (max-width: 768px) {
-		.horizontal-scroll-container {
-			height: auto;
-			overflow: visible;
-		}
-
-		.horizontal-track {
-			flex-direction: column;
-			width: 100%;
-			height: auto;
-		}
-
-		.motion-path-container {
-			display: none;
-		}
-	}
 </style>
 
 <script>
@@ -180,10 +163,10 @@ const about = aboutsEntries[0]?.data || null;
 			scrollTrigger: {
 				trigger: ".horizontal-scroll-container",
 				start: "top top",
-				end: "+=500%", // Longer scroll distance for slower animation speed
+				end: "+=500%",
 				pin: true,
 				pinSpacing: true,
-				scrub: 1, // Smoother scroll lag so movements are less abrupt
+				scrub: 1,
 				invalidateOnRefresh: true,
 			},
 		});
@@ -205,7 +188,7 @@ const about = aboutsEntries[0]?.data || null;
 			0,
 		);
 
-		// 1. Fade up the about section contents (starts immediately, completes fully before slide)
+		// 1. Fade up the about section contents
 		horizontalTl
 			.to(
 				".about-number, .about-heading, .about-badge, .about-content > *",
@@ -218,7 +201,7 @@ const about = aboutsEntries[0]?.data || null;
 				},
 				0,
 			)
-			// 2. Slide the skills section horizontally into view (starts after about section has fully faded in and rested)
+			// 2. Slide the skills section horizontally into view
 			.to(
 				".horizontal-track",
 				{
@@ -226,9 +209,9 @@ const about = aboutsEntries[0]?.data || null;
 					duration: 1.5,
 					ease: "power2.inOut",
 				},
-				1.0, // Delay the start of the slide until t = 1.0 (about finishes and sits visible for a bit)
+				1.0,
 			)
-			// 3. Fade up the skills section contents as they arrive and slide into place
+			// 3. Fade up the skills section contents
 			.to(
 				".skills-number, .skills-heading, .skills-intro, .skill-row",
 				{
@@ -238,16 +221,7 @@ const about = aboutsEntries[0]?.data || null;
 					stagger: 0.05,
 					ease: "power2.out",
 				},
-				1.8, // Starts at t = 1.8 (mid-to-end of the slide animation)
+				1.8,
 			);
-	} else {
-		// In simple scroll mode, ensure all elements are visible immediately
-		const elements = document.querySelectorAll(
-			".about-number, .about-heading, .about-badge, .about-content > *, .skills-number, .skills-heading, .skills-intro, .skill-row"
-		);
-		elements.forEach((el) => {
-			(el as HTMLElement).style.opacity = "1";
-			(el as HTMLElement).style.transform = "none";
-		});
 	}
 </script>

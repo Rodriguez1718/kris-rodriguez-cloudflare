@@ -435,14 +435,21 @@ const { projects } = Astro.props;
 			scene.fog = new THREE.Fog(0x000000, 8, 20);
 
 			// Camera
+			const isMobile = window.innerWidth <= 768;
 			const camera = new THREE.PerspectiveCamera(
 				40,
 				canvas.clientWidth / canvas.clientHeight,
 				0.1,
 				100
 			);
-			camera.position.set(4, 3, 6);
-			camera.lookAt(0, 1, 0);
+			
+			// Different camera position for mobile vs desktop
+			if (isMobile) {
+				camera.position.set(0, 2, 10);
+			} else {
+				camera.position.set(0, 2, 8);
+			}
+			camera.lookAt(0, 0, 0);
 
 			// Renderer
 			const renderer = new THREE.WebGLRenderer({
