@@ -114,8 +114,8 @@ const navLinks = [
 			<slot />
 		</main>
 
-		<button class="chat-button" id="chatButton" aria-label="Open chat">
-			<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+		<button class="chat-button" id="chatButton" aria-label="Open chat" title="Chatbot toggle">
+			<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
 				<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
 			</svg>
 		</button>
@@ -218,6 +218,14 @@ const navLinks = [
 				const gridLines = document.getElementById('gridLines');
 				const gridCount = 28;
 				const lines = [];
+
+				// Check if we should skip the loader
+				if (sessionStorage.getItem('skipLoader') === 'true') {
+					sessionStorage.removeItem('skipLoader'); // Clean up
+					loader?.classList.add('loaded'); // Hide loader immediately
+					return; // Exit early, skip animation
+				}
+
 
 				if (gridLines) {
 					const W = window.innerWidth;
@@ -504,8 +512,62 @@ const navLinks = [
 						customIconSrc: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none'%3E%3C/svg%3E"
 					},
 					chatWindow: {
-						showAgentMessages: true
-					}
+						showTitle: true,
+						showAgentMessages: true,
+						title: 'Flowise Bot',
+						titleAvatarSrc: 'https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/svg/google-messages.svg',
+						titleTextColor: '#f5f5f5',
+						titleBackgroundColor: '#0a0a0a',
+						welcomeMessage: 'Hi there! How can I help? Want to know about Kris?',
+						errorMessage: 'This is a custom error message',
+						backgroundColor: '#ffffff', // If set, this will overlap the background color of the chat window.
+						height: 700,
+						width: 400,
+						fontSize: 16,
+						starterPrompts: ['What is a bot?', 'Who are you?'], // It overrides the starter prompts set by the chat flow passed
+						starterPromptFontSize: 15,
+						clearChatOnReload: false, // If set to true, the chat will be cleared when the page reloads
+						sourceDocsTitle: 'Sources:',
+						renderHTML: true,
+						botMessage: {
+							backgroundColor: '#f4f4f5',
+							textColor: '#0a0a0a',
+							showAvatar: true,
+							avatarSrc: 'https://res.cloudinary.com/diluyxpya/image/upload/v1781234959/gru_byq7lb.jpg',
+						},
+						userMessage: {
+							backgroundColor: '#a78bfa',
+							textColor: '#ffffff',
+							showAvatar: true,
+							avatarSrc: 'https://res.cloudinary.com/diluyxpya/image/upload/v1781235360/KRIS_szsah4.png',
+						},
+						textInput: {
+							placeholder: 'Type your question',
+							backgroundColor: '#ffffff',
+							textColor: '#0a0a0a',
+							sendButtonColor: '#a78bfa',
+							maxChars: 50,
+							maxCharsWarningMessage: 'You exceeded the characters limit. Please input less than 50 characters.',
+							autoFocus: true, // If not used, autofocus is disabled on mobile and enabled on desktop. true enables it on both, false disables it on both.
+							sendMessageSound: true,
+							// sendSoundLocation: "send_message.mp3", // If this is not used, the default sound effect will be played if sendSoundMessage is true.
+							receiveMessageSound: true,
+							// receiveSoundLocation: "receive_message.mp3", // If this is not used, the default sound effect will be played if receiveSoundMessage is true.
+						},
+						feedback: {
+							color: '#303235',
+						},
+						dateTimeToggle: {
+							date: true,
+							time: true,
+						},
+						footer: {
+							textColor: '#303235',
+							text: 'Powered by',
+							company: 'Flowise',
+							companyLink: 'https://flowiseai.com',
+						},
+					},
 				}
 			})
 
@@ -629,7 +691,7 @@ const navLinks = [
 				background: #fff;
 				border-radius: 50%;
 				pointer-events: none;
-				z-index: 99999;
+				z-index: 42424244;
 				transform: translate(-50%, -50%);
 				transition: opacity 0.3s ease;
 				mix-blend-mode: difference;
@@ -642,7 +704,7 @@ const navLinks = [
 				width: 28px;
 				height: 28px;
 				pointer-events: none;
-				z-index: 99998;
+				z-index: 42424243;
 				animation: cursor-spin 4s linear infinite;
 				transition: width 0.4s cubic-bezier(0.16,1,0.3,1), height 0.4s cubic-bezier(0.16,1,0.3,1);
 				mix-blend-mode: difference;
@@ -706,12 +768,14 @@ const navLinks = [
 				cursor: pointer;
 				z-index: 1000;
 				transition: all 0.3s ease;
+				mix-blend-mode: difference;
 			}
 
 			.chat-button:hover {
 				background: var(--color-bg);
 				color: var(--color-text);
 				transform: scale(1.1);
+				mix-blend-mode: difference;
 			}
 
 			.chat-button svg {
